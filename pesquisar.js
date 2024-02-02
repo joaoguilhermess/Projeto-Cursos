@@ -33,13 +33,38 @@ class Pesquisar {
 		// 	console.log("Mínimo:", min);
 		// });
 
+		var context = this;
+
 		this.sort({
-			nome: "JOAO LUCAS SANTIAGO SANTOS"
+			curso: "SISTEMAS DE INFORMAÇÃO",
+			sigla: this.formatName("ufs"),
+			modalidade: "Ampla concorrência"
+			// nome: this.formatName("Ellen Yasmin da Silva")
 		}, function(a, b) {
-			return b.nota - a.nota;
+			return b.notaReal - a.notaReal;
 		}, function(result) {
+			// result = result.filter(function(item) {
+			// 	if (item.nome.split(" ")[0] == "GUILHERME") {
+			// 		if (item.curso.includes("ENGENHARIA")) {
+			// 			return item;
+			// 		}
+			// 	}
+			// });
+
 			for (var i = 0; i < result.length; i++) {
-				console.log(result[i]);
+				if (result[i].nome == context.formatName("João Guilherme Santos Silva")) {
+					console.log(result[i]);
+					console.log(i + 1, "/", result.length);
+				}
+
+				// console.log({
+				// 	"nota": result[i].nota,
+				// 	"notaReal": result[i].notaReal,
+				// 	"nome": result[i].nome,
+				// 	"modalidade": result[i].modalidade,
+				// 	"classificação": result[i].classificação,
+				// 	"curso": result[i].curso
+				// });
 			}
 
 			console.log(result.length);
@@ -90,7 +115,16 @@ class Pesquisar {
 		result = result.filter(function(item) {
 			for (var i = 0; i < list.length; i++) {
 				if (filter[list[i]]) {
-					if (item[list[i]] != filter[list[i]]) return;
+					var parameter = item[list[i]];
+
+					while (parameter[0] == " ") {
+						parameter = parameter.slice(1);
+					}
+					while (parameter[parameter.length - 1] == " ") {
+						parameter = parameter.slice(0, -1);
+					}
+
+					if (parameter != filter[list[i]]) return;
 				}
 			}
 
@@ -98,6 +132,36 @@ class Pesquisar {
 		});
 
 		show(result.sort(sort));
+	}
+
+	static formatName(name) {
+		var L = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		var l = "abcdefghijklmnopqrstuvwxyz";
+
+		var a = "óéíã";
+		var A = "OEIA";
+
+		var result = "";
+
+		for (var i = 0; i < name.length; i++) {
+			if (L.includes(name[i])) {
+				result += name[i];
+			}
+
+			if (l.includes(name[i])) {
+				result += L[l.indexOf(name[i])];
+			}
+
+			if (name[i] == " ") {
+				result += name[i];
+			}
+
+			if (a.includes(name[i])) {
+				result += A[a.indexOf(name[i])];
+			}
+		}
+
+		return result;
 	}
 }
 
