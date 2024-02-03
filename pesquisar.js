@@ -36,35 +36,61 @@ class Pesquisar {
 		var context = this;
 
 		this.sort({
-			curso: "SISTEMAS DE INFORMAÇÃO",
-			sigla: this.formatName("ufs"),
-			modalidade: "Ampla concorrência"
-			// nome: this.formatName("Ellen Yasmin da Silva")
+			// curso: ["SISTEMAS DE INFORMAÇÃO", "CIÊNCIA DA COMPUTAÇÃO"],
+			// curso: ["SISTEMAS DE INFORMAÇÃO"],
+			// sigla: this.formatName("ufs"),
+			// estado: "SE"
+			// modalidade: "Ampla concorrência",
+			// classificação: "1"
+			grau: "Bacharelado"
+			// campus: "CAMPUS UNIVERSITÁRIO PROF ALBERTO CARVALHO"
 		}, function(a, b) {
 			return b.notaReal - a.notaReal;
 		}, function(result) {
 			// result = result.filter(function(item) {
-			// 	if (item.nome.split(" ")[0] == "GUILHERME") {
-			// 		if (item.curso.includes("ENGENHARIA")) {
-			// 			return item;
-			// 		}
+			// 	if (item.nome.includes(context.formatName("João Guilherme"))) {
+			// 		return item;
 			// 	}
 			// });
 
+			var r = {};
+
 			for (var i = 0; i < result.length; i++) {
-				if (result[i].nome == context.formatName("João Guilherme Santos Silva")) {
-					console.log(result[i]);
-					console.log(i + 1, "/", result.length);
-				}
+				// console.log(result[i]);
+
+				// if (result[i].nome == context.formatName("João Guilherme Santos Silva")) {
+					// console.log(result[i]);
+				// 	console.log(i + 1, "/", result.length);
+				// }
 
 				// console.log({
-				// 	"nota": result[i].nota,
+					// "nota": result[i].nota,
 				// 	"notaReal": result[i].notaReal,
-				// 	"nome": result[i].nome,
+					// "nome": result[i].nome,
 				// 	"modalidade": result[i].modalidade,
-				// 	"classificação": result[i].classificação,
+					// "classificação": result[i].classificação,
 				// 	"curso": result[i].curso
 				// });
+
+				if (!r[result[i].curso]) {
+					r[result[i].curso] = 0;
+				}
+
+				r[result[i].curso] += 1;
+			}
+
+			var list = Object.keys(r);
+
+			for (var i = 0; i < list.length; i++) {
+				list[i] = r[list[i]] + " " + list[i];
+			}
+
+			list = list.sort(function(a, b) {
+				return parseInt(b.split(" ")[0]) - parseInt(a.split(" ")[0]);
+			});
+
+			for (var i = 0; i < list.length; i++) {
+				console.log(parseInt(list[i].split(" ")[0]), list[i].split(" ").slice(1).join(" "));
 			}
 
 			console.log(result.length);
@@ -107,24 +133,55 @@ class Pesquisar {
 		this.result = result;
 	}
 
-	static sort(filter, sort, show) {
+	static sort(filters, sort, show) {
 		var result = this.result;
 
-		var list = Object.keys(filter);
+		var list = Object.keys(filters);
 
 		result = result.filter(function(item) {
 			for (var i = 0; i < list.length; i++) {
-				if (filter[list[i]]) {
-					var parameter = item[list[i]];
+				if (typeof filters[list[i]] == "object") {
+					var ok = false;
 
-					while (parameter[0] == " ") {
-						parameter = parameter.slice(1);
-					}
-					while (parameter[parameter.length - 1] == " ") {
-						parameter = parameter.slice(0, -1);
+					for (var k = 0; k < filters[list[i]].length; k++) {
+						var f = filters[list[i]][k];
+
+						if (f) {
+							var parameter = item[list[i]];
+
+							while (parameter[0] == " ") {
+								parameter = parameter.slice(1);
+							}
+							while (parameter[parameter.length - 1] == " ") {
+								parameter = parameter.slice(0, -1);
+							}
+
+							if (parameter == f) {
+								ok = true;
+							}
+						}
 					}
 
-					if (parameter != filter[list[i]]) return;
+					if (!ok) {
+						return;
+					}
+				} else {
+					var f = filters[list[i]];
+
+					if (f) {
+						var parameter = item[list[i]];
+
+						while (parameter[0] == " ") {
+							parameter = parameter.slice(1);
+						}
+						while (parameter[parameter.length - 1] == " ") {
+							parameter = parameter.slice(0, -1);
+						}
+
+						if (parameter != f) {
+							return;
+						}
+					}
 				}
 			}
 
